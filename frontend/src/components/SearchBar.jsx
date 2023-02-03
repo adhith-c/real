@@ -9,7 +9,7 @@ mapboxgl.accessToken =
   "pk.eyJ1IjoidW5kZXI4Njc5IiwiYSI6ImNsY3ZudWhmcjAzYnEzb3BoZHV0bjczc3UifQ._LGzT_f5pMq7-OBSXmb3OA";
 
 // const map = useRef(null);
-const SearchBar = ({ addGeo, setCoordinates }) => {
+const SearchBar = ({ addGeo, setCoordinates, mapCircle }) => {
   const [localSearch, setLocalSearch] = useState("");
   const [recommendation, setRecommendation] = useState([]);
   // useEffect(() => {
@@ -35,6 +35,7 @@ const SearchBar = ({ addGeo, setCoordinates }) => {
     setLocalSearch(e.place_name);
     setCoordinates(e.geometry.coordinates);
     setRecommendation([]);
+    // mapCircle();
   }
 
   return (

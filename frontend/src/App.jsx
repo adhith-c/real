@@ -13,6 +13,9 @@ import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import PropertyPage from "./pages/PropertyPage/PropertyPage";
 import SavedPage from "./pages/SavedPage/SavedPage";
 import Chat from "./pages/Chat/Chat";
+import AdminLogin from "./pages/AdminPages/Login";
+import AdminHomePage from "./pages/AdminPages/HomePage";
+
 function App() {
   return (
     <StrictMode>
@@ -39,10 +42,14 @@ function App() {
           path="/otpVerify"
           element={<Otp />}
         />
-        {/* <Route
-        path="/home"
-        element={<HomePage />}
-      /> */}
+        <Route
+          path="/admin/login"
+          element={<AdminLogin />}
+        />
+        <Route
+          path="/admin/dashboard"
+          element={<AdminHomePage />}
+        />
 
         <Route
           path="profile"

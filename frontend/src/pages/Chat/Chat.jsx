@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./Chat.css";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectCurrentUser } from "../../features/auth/authSlice";
 import { userChats } from "../../api/ChatRequests";
 import Conversation from "../../components/Conversation";
@@ -10,10 +10,12 @@ function Chat() {
   const [chats, setChats] = useState([]);
   const socket = useRef();
   const user = useSelector(selectCurrentUser);
+  const dispatch = useDispatch();
   const [currentChat, setCurrentChat] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [sendMessage, setSendMessage] = useState(null);
   const [receivedMessage, setReceivedMessage] = useState(null);
+  const [notifications, setNotifications] = useState([]);
   // Send Message to socket server
   useEffect(() => {
     if (sendMessage !== null) {
@@ -32,8 +34,11 @@ function Chat() {
   // Get the message from socket server
   useEffect(() => {
     socket.current.on("recieve-message", (data) => {
-      console.log(data);
+      // console.log(data);
       setReceivedMessage(data);
+      // if (!notifications.includes(data)) {
+      //   setNotifications(data);
+      // }
     });
   }, []);
 
