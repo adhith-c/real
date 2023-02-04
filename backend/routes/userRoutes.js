@@ -9,12 +9,13 @@ const {
   userLogin,
   resendOtp,
   addProfilePic,
-  editProfile,
+  getAllusers,
   handleRefreshToken,
   getSingleUser,
 } = require("../controllers/userController");
 
 router.get("/", homePage);
+router.get("/users", getAllusers);
 router.get("/user/:id", getSingleUser);
 // router.get("/register", register);
 router.post("/register", register);

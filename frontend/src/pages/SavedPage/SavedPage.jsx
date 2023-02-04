@@ -18,7 +18,9 @@ function SavedPage() {
       headers: { Authorization: `Bearer ${token}` },
     });
     console.log("result is", result.data.saved.Items);
-    setSavedProperties(result.data.saved.Items);
+    const saveds = [...result.data.saved.Items].reverse();
+    console.log("reverse saved", saveds);
+    setSavedProperties(saveds);
     // setUserData(result.data.user);
   };
 

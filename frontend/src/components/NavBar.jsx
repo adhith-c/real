@@ -109,7 +109,7 @@ function NavBar() {
           Home
         </li>
         <li className="p-4">Property Type</li>
-        <li className="p-4">Notifications</li>
+        {/* <li className="p-4">Notifications</li> */}
         {/* {notifications &&
           notifications.map((notification) => {
             return <li>{notification.senderId}</li>;
@@ -152,7 +152,7 @@ function NavBar() {
                       src="/docs/images/people/profile-picture-1.jpg"
                       alt="Jese image"
                     /> */}
-                    <div class="absolute flex items-center justify-center w-5 h-5 ml-6 -mt-5 bg-blue-600 border border-white rounded-full dark:border-gray-800">
+                    {/* <div class="absolute flex items-center justify-center w-5 h-5 ml-6 -mt-5 bg-blue-600 border border-white rounded-full dark:border-gray-800">
                       <svg
                         class="w-3 h-3 text-white"
                         // aria-hidden="true"
@@ -162,7 +162,7 @@ function NavBar() {
                         <path d="M8.707 7.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l2-2a1 1 0 00-1.414-1.414L11 7.586V3a1 1 0 10-2 0v4.586l-.293-.293z"></path>
                         <path d="M3 5a2 2 0 012-2h1a1 1 0 010 2H5v7h2l1 2h4l1-2h2V5h-1a1 1 0 110-2h1a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"></path>
                       </svg>
-                    </div>
+                    </div> */}
                   </div>
                   <div className="flex flex-col">
                     {notifications.map((notification) => (

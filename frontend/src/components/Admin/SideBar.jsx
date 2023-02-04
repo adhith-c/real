@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import DashBoard from "./DashBoard";
+import UserTable from "./UserTable";
 
 function SideBar() {
+  const [menu, setMenu] = useState("dashboard");
   return (
     <div>
       <nav class="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
@@ -36,7 +38,7 @@ function SideBar() {
                   alt="FlowBite Logo"
                 />
                 <span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">
-                  Flowbite
+                  BeReal
                 </span>
               </a>
             </div>
@@ -122,7 +124,7 @@ function SideBar() {
         aria-label="Sidebar">
         <div class="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
           <ul class="space-y-2">
-            <li>
+            <li onClick={() => setMenu("dashboard")}>
               <a
                 href="#"
                 class="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
@@ -139,7 +141,7 @@ function SideBar() {
               </a>
             </li>
 
-            <li>
+            <li onClick={() => setMenu("users")}>
               <a
                 href="#"
                 class="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
@@ -199,7 +201,8 @@ function SideBar() {
 
       <div class="p-4 sm:ml-64">
         <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700 mt-14">
-          <DashBoard />
+          {menu === "dashboard" ? <DashBoard /> : <UserTable />}
+
           {/* <div class="grid grid-cols-3 gap-4 mb-4">
             <div class="flex items-center justify-center h-24 rounded bg-gray-50 dark:bg-gray-800">
               <p class="text-2xl text-gray-400 dark:text-gray-500">+</p>

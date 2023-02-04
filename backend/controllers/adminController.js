@@ -1,7 +1,10 @@
 require("dotenv").config();
 const Admin = require("../models/admin");
 const User = require("../models/user");
+const Property = require("../models/property");
 const Banner = require("../models/banner");
+const Chat = require("../models/chat");
+const jwt = require("jsonwebtoken");
 const { hashPassword, comparePassword } = require("../utils/helper");
 
 exports.getAdminLogin = async (req, res) => {
@@ -28,8 +31,10 @@ exports.postAdminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
     const admin = await Admin.findOne({ email });
+    console.log("admin", admin);
     if (admin) {
       const isValid = comparePassword(password, admin.password);
+      console.log("valid", isValid);
       if (isValid) {
         const token = jwt.sign(
           {
@@ -39,15 +44,39 @@ exports.postAdminLogin = async (req, res) => {
           },
           process.env.JWT_ADMIN_SECRET_KEY
         );
-        res.send("login success");
+        res.status(200).json({ token });
       } else {
         res.send("incorrect password");
       }
     } else {
-      res.send("invalid email");
+      // res.send("invalid email");
+      const hashedpassword = hashPassword(process.env.PASSWORD);
+      const newAdmin = new Admin({
+        name: process.env.NAME,
+        email: process.env.EMAIL,
+        password: hashedpassword,
+      });
+      await newAdmin.save();
+      if (email === newAdmin.email) {
+        const isValidPass = comparePassword(password, newAdmin.password);
+        if (isValidPass) {
+          const token = jwt.sign(
+            {
+              id: admin._id,
+              name: admin.name,
+              type: "admin",
+            },
+            process.env.JWT_ADMIN_SECRET_KEY
+          );
+          res.status(200).json({ token });
+        } else {
+          res.send("incorrect password");
+        }
+      }
     }
   } catch (err) {
     console.log(err);
+    res.status(500).json({ error: err });
   }
 };
 
@@ -80,5 +109,60 @@ exports.addBanners = async (req, res) => {
     res.send(newBanner);
   } catch (err) {
     console.log(err);
+  }
+};
+exports.blockUnblockUser = async (req, res) => {
+  try {
+    console.log("inside blockkk");
+    let { id } = req.params;
+    const blockuser = await User.findOne({
+      _id: id,
+    });
+    // id = mongoose.Types.ObjectId(id);
+    // let status = blockuser.status;
+    if (blockuser.isBlocked) {
+      await User.findByIdAndUpdate(id, {
+        isBlocked: false,
+        status: "active",
+      });
+      res.status(200).json({ msg: "unBlocked" });
+    } else {
+      await User.findByIdAndUpdate(id, {
+        isBlocked: true,
+        status: "blocked",
+      });
+      res.status(202).json({ msg: "blocked" });
+    }
+  } catch (error) {
+    res.status(500).json({ msg: error });
+  }
+};
+
+exports.getUserCount = async (req, res) => {
+  try {
+    const userCount = await User.find({}).count();
+    res.status(200).json({ userCount });
+  } catch (error) {
+    res.status(500).json({ msg: error });
+  }
+};
+exports.getPropertyCount = async (req, res) => {
+  try {
+    const propertyCount = await Property.find({}).count();
+    console.log(propertyCount);
+    res.status(200).json({ propertyCount });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: error });
+  }
+};
+exports.getChatCount = async (req, res) => {
+  try {
+    const chatCount = await Chat.find({}).count();
+    console.log(chatCount);
+    res.status(200).json({ chatCount });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: error });
   }
 };

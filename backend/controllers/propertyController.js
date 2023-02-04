@@ -36,19 +36,24 @@ exports.addProperty = async (req, res) => {
     // res.send(property);
   } catch (err) {
     console.log(err);
+    res.status(500).json({ err });
   }
 };
 
 exports.getProperty = async (req, res) => {
   try {
     if (req.user) {
-      const properties = await Property.find({});
+      // console.log("req user", req.user);
+      const user = await User.findOne({ email: req.user.UserInfo.email });
+      // console.log("user jis", user);
+      const properties = await Property.find({ userId: { $ne: user._id } });
       res.status(200).send({ properties });
     } else {
       res.status(403).send("UNAuthorized");
     }
   } catch (err) {
     console.log(err);
+    res.status(500).json({ err });
   }
 };
 
@@ -66,5 +71,22 @@ exports.getSingleProperty = async (req, res) => {
     }
   } catch (err) {
     console.log(err);
+    res.status(500).json({ err });
+  }
+};
+
+exports.MyProperties = async (req, res) => {
+  try {
+    if (req.user) {
+      const user = await User.findOne({ email: req.user.UserInfo.email });
+      const property = await Property.find({ userId: user._id });
+
+      res.status(200).send({ property });
+    } else {
+      res.status(403).send("UNAuthorized");
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ err });
   }
 };

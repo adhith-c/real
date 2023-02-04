@@ -1,14 +1,22 @@
 const Chat = require("../models/chat");
 
 exports.createChat = async (req, res) => {
-  const newChat = new Chat({
-    members: [req.body.senderId, req.body.recieverId],
+  // console.log("sendet,", req.body.senderId, req.body.recieverId);
+  const chat = await Chat.findOne({
+    members: { $all: [req.body.senderId, req.body.recieverId] },
   });
-  try {
-    const result = await newChat.save();
-    res.status(200).json(result);
-  } catch (err) {
-    res.status(500).json(err);
+  if (chat) {
+    res.status(201).json({ chat });
+  } else {
+    const newChat = new Chat({
+      members: [req.body.senderId, req.body.recieverId],
+    });
+    try {
+      const result = await newChat.save();
+      res.status(200).json(result);
+    } catch (err) {
+      res.status(500).json(err);
+    }
   }
 };
 

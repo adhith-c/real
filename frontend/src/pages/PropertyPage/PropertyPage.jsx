@@ -4,16 +4,22 @@ import Maps from "../../components/Maps";
 import Footer from "../../components/Footer";
 import PropertyMap from "../../components/PropertyMap/PropertyMap";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { selectCurrentToken } from "../../features/auth/authSlice";
+import {
+  selectCurrentToken,
+  selectCurrentUser,
+} from "../../features/auth/authSlice";
 import axios from "axios";
+import instance from "../../config/axios";
 import Loading from "../../components/Loading";
 
 const PropertyPage = () => {
   const params = useParams();
+  const navigate = useNavigate();
   // console.log("params", params.id);
   const token = useSelector(selectCurrentToken);
+  const user = useSelector(selectCurrentUser);
   const [property, setProperty] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [mainImage, setmainImage] = useState("");
@@ -42,7 +48,21 @@ const PropertyPage = () => {
     setProperty(result.data.property);
     setmainImage(result.data.mainImg);
   };
-
+  const chatWithSeller = async (id) => {
+    console.log("user Id ", id);
+    console.log("user is", user);
+    const res = await instance.post(
+      "/chat",
+      { senderId: user, recieverId: id },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    console.log("response", res.status);
+    if (res.status == 200 || res.status === 201) {
+      navigate("/chat");
+    }
+  };
   return (
     <div className="w-full max-w-[100%]">
       <NavBar />
@@ -106,8 +126,9 @@ const PropertyPage = () => {
               <p className="text-xs mt-2">Year Built: {property.yearBuilt}</p>
               <button
                 type="button"
-                className=" mt-16 py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
-                Request More Information
+                className=" mt-16 py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                onClick={() => chatWithSeller(property.userId)}>
+                Chat with Seller
               </button>
             </div>
           </div>
