@@ -1,21 +1,21 @@
 import { useLocation, Navigate, Outlet } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { selectCurrentToken } from "./auth/authSlice";
 
 import React from "react";
+import { selectCurrentAdmin } from "../admin/adminMainSlice";
 
-function RequireAuth() {
-  const token = useSelector(selectCurrentToken);
+function AdminAuth() {
+  const token = useSelector(selectCurrentAdmin);
   const location = useLocation();
   return token ? (
     <Outlet />
   ) : (
     <Navigate
-      to="/login"
+      to="/admin/login"
       state={{ from: location }}
       replace
     />
   );
 }
 
-export default RequireAuth;
+export default AdminAuth;

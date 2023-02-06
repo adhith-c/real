@@ -1,9 +1,14 @@
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import { selectCurrentAdmin } from "../../features/admin/adminMainSlice";
+import Toast from "../Toast";
 import DashBoard from "./DashBoard";
 import UserTable from "./UserTable";
 
 function SideBar() {
+  const token = useSelector(selectCurrentAdmin);
   const [menu, setMenu] = useState("dashboard");
+  console.log("admin", token);
   return (
     <div>
       <nav class="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">

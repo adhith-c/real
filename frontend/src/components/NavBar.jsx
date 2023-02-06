@@ -10,6 +10,7 @@ import { Link, useNavigate } from "react-router-dom";
 import SellModal from "./SellModal";
 import { io } from "socket.io-client";
 import { getUser } from "../api/ChatRequests";
+import Toast from "./Toast";
 
 function NavBar() {
   const user = useSelector(selectCurrentUser);
@@ -23,6 +24,7 @@ function NavBar() {
 
   console.log(token);
   const [nav, setNav] = useState(true);
+  const [toast, setToast] = useState("");
   useEffect(() => {
     socket.current = io("ws://localhost:8800");
     socket.current.emit("newUser", user);
@@ -99,6 +101,7 @@ function NavBar() {
       <SellModal
         modalState={modalIsOpen}
         close={closeModal}
+        setToast={setToast}
       />
       {/* <h1 class="text-3xl font-bold underline">Hello world!</h1> */}
       <h1 className="font-bold text-3xl mt-2 ">BeReal</h1>
@@ -240,7 +243,7 @@ function NavBar() {
       <div
         className={
           !nav
-            ? "fixed left-0 top-0 w-[40%] border-r border-r-gray-300 bg-[#ffff] h-full ease-in-out duration-500"
+            ? "fixed z-10 left-0 top-0 w-[40%] border-r border-r-gray-300 bg-[#ffff] h-full ease-in-out duration-500"
             : "fixed left-[100%]"
         }>
         <h1 className="font-bold text-3xl w-full m-4">React</h1>
@@ -251,6 +254,7 @@ function NavBar() {
           <li className="p-4 border-b border-gray-400">Chats</li>
           <li className="p-4">Wishlist</li>
         </ul>
+        {toast && <Toast type={toast} />}
       </div>
     </div>
   );

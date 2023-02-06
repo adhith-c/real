@@ -12,6 +12,7 @@ const persistConfig = {
 const reducer = combineReducers({
   [apiSlice.reducerPath]: apiSlice.reducer,
   auth: authRedcer,
+  admin: adminMainSlice,
 });
 const persistedReducer = persistReducer(persistConfig, reducer);
 export const store = configureStore({

@@ -44,7 +44,7 @@ exports.postAdminLogin = async (req, res) => {
           },
           process.env.JWT_ADMIN_SECRET_KEY
         );
-        res.status(200).json({ token });
+        res.status(200).json({ accessToken: token, id: admin._id });
       } else {
         res.send("incorrect password");
       }
@@ -68,7 +68,7 @@ exports.postAdminLogin = async (req, res) => {
             },
             process.env.JWT_ADMIN_SECRET_KEY
           );
-          res.status(200).json({ token });
+          res.status(200).json({ id: admin._id, accessToken: token });
         } else {
           res.send("incorrect password");
         }

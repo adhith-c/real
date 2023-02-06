@@ -265,7 +265,7 @@ function SignUp() {
                     </div>
                     <div className="h-16">
                       <input
-                        type="text"
+                        type="password"
                         name="confirmPassword"
                         id="confirmPassword"
                         value={userData.confirmPassword}

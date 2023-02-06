@@ -4,7 +4,6 @@ const { post } = require("../routes/adminRoutes");
 
 exports.addProperty = async (req, res) => {
   try {
-    console.log("hii guyss");
     console.log("req body:", req.body);
     const userEmail = req.user.UserInfo.email;
     console.log("user mail", userEmail);
@@ -33,6 +32,7 @@ exports.addProperty = async (req, res) => {
     });
     await property.save();
     console.log("sucesssss");
+    res.status(200).json({ property });
     // res.send(property);
   } catch (err) {
     console.log(err);
@@ -85,6 +85,27 @@ exports.MyProperties = async (req, res) => {
     } else {
       res.status(403).send("UNAuthorized");
     }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ err });
+  }
+};
+exports.getPropertyChart = async (req, res) => {
+  try {
+    const data = await Property.aggregate([
+      {
+        $group: {
+          _id: {
+            $month: "$createdAt",
+          },
+          count: {
+            $sum: 1,
+          },
+        },
+      },
+    ]);
+    console.log("chart", data);
+    res.status(200).json({ data });
   } catch (err) {
     console.log(err);
     res.status(500).json({ err });

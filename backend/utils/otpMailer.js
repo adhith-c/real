@@ -38,7 +38,7 @@ const sendOtpVerification = async ({ _id, email }, req, res) => {
 
     await newOtpRecord.save();
     await transporter.sendMail(mailOptions);
-    res.send(newOtpRecord);
+    res.status(200).json({ newOtpRecord });
   } catch (err) {
     console.log(err);
   }

@@ -16,6 +16,7 @@ import { Link } from "react-router-dom";
 import mapboxgl from "mapbox-gl";
 import * as MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import * as turf from "@turf/turf";
+import Toast from "../../components/Toast";
 // import { io } from "socket.io-client";
 mapboxgl.accessToken =
   "pk.eyJ1IjoidW5kZXI4Njc5IiwiYSI6ImNsY3ZudWhmcjAzYnEzb3BoZHV0bjczc3UifQ._LGzT_f5pMq7-OBSXmb3OA";
@@ -395,54 +396,10 @@ function HomePage() {
       //   };
       // };
     }, [coordinates]);
-
-    // function MapboxGeocoder(options) {
-    //   this._eventEmitter = new EventEmitter();
-    //   this.options = extend({}, this.options, options);
-    //   this.inputString = "";
-    //   this.fresh = true;
-    //   this.lastSelected = null;
-    //   this.geolocation = new Geolocation();
-    // }
-
-    // MapboxGeocoder.prototype = {
-    //   options: {
-    //     zoom: 16,
-    //     flyTo: true,
-    //     trackProximity: true,
-    //     minLength: 2,
-    //     reverseGeocode: false,
-    //     flipCoordinates: false,
-    //     limit: 5,
-    //     origin: "https://api.mapbox.com",
-    //     enableEventLogging: true,
-    //     marker: true,
-    //     mapboxgl: null,
-    //     collapsed: false,
-    //     clearAndBlurOnEsc: false,
-    //     clearOnBlur: false,
-    //     enableGeolocation: false,
-    //     addressAccuracy: "street",
-    //     getItemValue: function (item) {
-    //       return item.place_name;
-    //     },
-    //     render: function (item) {
-    //       var placeName = item.place_name.split(",");
-    //       return (
-    //         '<div class="mapboxgl-ctrl-geocoder--suggestion"><div class="mapboxgl-ctrl-geocoder--suggestion-title">' +
-    //         placeName[0] +
-    //         '</div><div class="mapboxgl-ctrl-geocoder--suggestion-address">' +
-    //         placeName.splice(1, placeName.length).join(",") +
-    //         "</div></div>"
-    //       );
-    //     },
-    //   },
-    // };
-    // var geocoder = new MapboxGeocoder({ accessToken: mapboxgl.accessToken });
-    // geocoder.addTo("#geocoder-container");
   }
   return (
     <div className="w-full">
+      {/* <Toast /> */}
       <NavBar />
       <div className="homeBg bg-[url('homebg.jpg')] bg-cover bg-center h-screen flex justify-center items-center">
         <SearchPage

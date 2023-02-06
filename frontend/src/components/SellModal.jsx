@@ -28,7 +28,7 @@ const customStyles = {
 // Make sure to bind modal to your appElement (https://reactcommunity.org/react-modal/accessibility/)
 // Modal.setAppElement("#yourAppElement");
 
-function SellModal({ modalState, close }) {
+function SellModal({ modalState, close, setToast }) {
   const [lng, setLng] = useState(74.8436891311305);
   const [lat, setLat] = useState(22.593023268136676);
   const [zoom, setZoom] = useState(1);
@@ -151,11 +151,21 @@ function SellModal({ modalState, close }) {
         Authorization: `Bearer ${token}`,
       };
 
-      const result = await axios.post(
-        "http://localhost:4000/property/addProperty",
-        { propertyData, propertyType, listingType, url, lat, lng, zoom },
-        { headers: headers }
-      );
+      const result = await axios
+        .post(
+          "http://localhost:4000/property/addProperty",
+          { propertyData, propertyType, listingType, url, lat, lng, zoom },
+          { headers: headers }
+        )
+        .then((data) => {
+          console.log("data", data.status);
+          if (data.status === 200) {
+            setToast("success");
+          } else {
+            setToast("error");
+          }
+          close();
+        });
       // ... perform after upload is successful operation
     });
   };

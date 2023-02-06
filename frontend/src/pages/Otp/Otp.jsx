@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Otp.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "../../config/axios";
@@ -8,7 +8,29 @@ function Otp() {
   const navigate = useNavigate();
   const location = useLocation();
   const [otp, setOtp] = useState("");
+  const [seconds, setSeconds] = useState(30);
+  const [minutes, setMinutes] = useState(1);
   const [validate, setValidate] = useState({ status: false, error: "" });
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (seconds > 0) {
+        setSeconds(seconds - 1);
+      }
+      if (seconds == 0) {
+        if (minutes == 0) {
+          clearInterval(interval);
+        } else {
+          setSeconds(59);
+          setMinutes(minutes - 1);
+        }
+      }
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [minutes, seconds]);
+
   const changeOtp = (e) => {
     setOtp(e.target.value);
   };
@@ -85,12 +107,35 @@ function Otp() {
                       Verify
                     </button>
                   </div>
-                  <div className=" mb-4">
+                  <div className="flex items-center justify-center mb-4">
                     <p className="text-white text-xs text-right font-normal">
-                      Didnt Recieve an OTP?
-                      <button className="bg-cyan-600 text-white font-medium">
-                        Resend
-                      </button>
+                      {seconds > 0 || minutes > 0 ? (
+                        <p>
+                          Time Remaining:{" "}
+                          {minutes < 10 ? `0${minutes}` : minutes}:
+                          {seconds < 10 ? `0${seconds}` : seconds}
+                        </p>
+                      ) : (
+                        <p> Didnt Recieve an OTP?</p>
+                      )}
+
+                      {/* <button
+                        disabled={seconds > 0 || minutes > 0}
+                        type="button"
+                        // onClick={resendOtp}
+                        className="text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+                        Resend Otp
+                      </button> */}
+                      {seconds == 0 && minutes == 0 ? (
+                        <button
+                          type="button"
+                          // onClick={resendOtp}
+                          className="text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded text-sm px-2 py-2 text-center mr-2 mb-2 mt-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+                          Resend Otp
+                        </button>
+                      ) : (
+                        ""
+                      )}
                     </p>
                   </div>
                 </form>

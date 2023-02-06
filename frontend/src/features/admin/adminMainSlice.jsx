@@ -6,7 +6,7 @@ export const getAdmin = createAsyncThunk(
   async ({ email, password, Navigate }) => {
     const res = await instance.post("admin/login", { email, password });
     console.log("res", res.data);
-    if (res.data.token) {
+    if (res.data.accessToken) {
       Navigate("/admin/dashboard");
     }
 

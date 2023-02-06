@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import instance from "../../config/axios";
 import { selectCurrentToken } from "../../features/auth/authSlice";
+import Charts from "./Charts";
 function DashBoard() {
   const token = useSelector(selectCurrentToken);
   const [userCount, setUserCount] = useState();
@@ -47,13 +48,12 @@ function DashBoard() {
           <p class="text-2xl text-gray-200 dark:text-gray-200 font-Jost font-semibold">
             Total Chats
           </p>
-          <p class="text-2xl text-gray-400 dark:text-gray-500">
-            {propertyCount}
-          </p>
+          <p class="text-2xl text-gray-400 dark:text-gray-500">{chatCount}</p>
         </div>
       </div>
-      <div class="flex items-center justify-center h-80 mb-4 rounded bg-gray-50 dark:bg-gray-800">
-        <p class="text-2xl text-gray-400 dark:text-gray-500">+</p>
+      <div class="flex items-center justify-center mb-4 rounded bg-gray-50 dark:bg-gray-800">
+        <Charts />
+        {/* <p class="text-2xl text-gray-400 dark:text-gray-500">+</p> */}
       </div>
     </div>
   );
