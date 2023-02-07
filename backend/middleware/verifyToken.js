@@ -5,7 +5,7 @@ const verifyToken = (req, res, next) => {
   console.log("req headers", req.headers.authorization);
   let auth = req.headers.authorization;
   if (!auth) {
-    res.sendStatus(404).json({
+    res.status(404).json({
       error: "no token provided",
     });
   } else {
@@ -19,7 +19,7 @@ const verifyToken = (req, res, next) => {
     (err, decode) => {
       if (err) {
         console.log("failed invalid token");
-        res.sendStatus(405).json({
+        res.status(405).json({
           error: "invalid token",
         });
       } else {

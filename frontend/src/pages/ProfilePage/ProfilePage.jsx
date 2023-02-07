@@ -54,9 +54,11 @@ function ProfilePage() {
       />
       <div className="grid lg:grid-cols-6 max-w-[98%] bg-stone-200  mx-auto ">
         <div className="md:col-span-1 mx-3 mt-4  bg-white mb-4 flex flex-col rounded-2xl border-black border max-h-60">
-          <h1 className="font-Jost text-2xl mx-auto mt-8">Profile Options:</h1>
+          <h1 className="font-Jost text-2xl mx-auto mt-8 mx-4">
+            Profile Options:
+          </h1>
           <p className="font-Jost text-lg mx-auto mt-12">Profile</p>
-          <p className="font-Jost text-lg mx-auto mt-8">My Properties</p>
+          {/* <p className="font-Jost text-lg mx-auto mt-8">My Properties</p> */}
           {/* <ProfileOptions /> */}
         </div>
         <div className="mt-5 mx-2 col-span-3 flex ">

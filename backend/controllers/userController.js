@@ -275,3 +275,71 @@ exports.getAllusers = async (req, res) => {
     res.status(500).json({ msg: err });
   }
 };
+exports.getEmailUser = async (req, res) => {
+  try {
+    const email = req.body.email;
+    console.log("email is", email);
+    const user = await User.findOne({ email: email });
+    if (user) {
+      res.status(200).json({ user });
+    } else {
+      const msg = "not found";
+      res.status(200).json({ msg });
+    }
+  } catch (err) {
+    res.status(500).json({ msg: err });
+  }
+};
+
+exports.changeEmail = async (req, res) => {
+  try {
+    console.log("req,", req.body);
+    const userMail = req.body.oldEmail;
+    const user = await User.findOne({ email: userMail });
+    // await Otp.findOneAndDelete({ userEmail: userMail });
+    await Otp.deleteMany({ userEmail: userMail });
+    await Otp.deleteMany({ userEmail: req.body.email });
+
+    sendOtpVerification({ _id: user._id, email: req.body.email }, req, res);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ err });
+  }
+};
+exports.verifyOtp = async (req, res) => {
+  try {
+    const otp = req.body.otp;
+    const newEmail = req.body.email;
+    console.log("req,", req.body);
+    const userMail = req.body.oldEmail;
+    // const user = await User.findOne({ email: userMail });
+    const userOtp = await Otp.findOne({ userEmail: newEmail });
+    let message = "";
+    if (Date.now() < userOtp.expiresAt) {
+      const isValidOtp = compareOtp(otp, userOtp.otp);
+      if (isValidOtp) {
+        console.log("valid otp");
+        await User.findOneAndUpdate(
+          { email: userMail },
+          { email: newEmail, isVerified: true }
+        );
+        await Otp.findOneAndDelete({ userEmail: newEmail });
+        message = "verified";
+      } else {
+        console.log("invalid otp");
+        message = "invalid-otp";
+        // res.status(401);
+      }
+    } else {
+      console.log("otp expired");
+      await Otp.findOneAndDelete({ userEmail: userMail });
+      message = "otp-expired";
+      //await User.findOneAndDelete({ email: email });
+      // res.status(403);
+    }
+    res.status(200).json({ message });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ err });
+  }
+};

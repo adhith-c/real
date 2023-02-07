@@ -6,10 +6,11 @@ import { useLoginMutation } from "../../features/authApiSlice";
 
 import "./Login.css";
 import Loading from "../../components/Loading";
+import OtpModal from "../../components/OtpModal";
 function Login() {
   const userRef = useRef();
   const errRef = useRef();
-
+  const [otpModal, setOtpModal] = useState(false);
   const [user, setUser] = useState("");
   const [pwd, setPwd] = useState("");
   const [errMsg, setErrMsg] = useState("");
@@ -46,6 +47,9 @@ function Login() {
   };
   const handleUserInput = (e) => setUser(e.target.value);
   const handlePwdInput = (e) => setPwd(e.target.value);
+  const closeOtpModal = () => {
+    setOtpModal(false);
+  };
   // const [validate, setValidate] = useState({
   //   userName: {
   //     status: false,
@@ -62,6 +66,12 @@ function Login() {
     </div>
   ) : (
     <div className="h-screen bg-cover loginBg">
+      {otpModal && (
+        <OtpModal
+          modalState={otpModal}
+          close={closeOtpModal}
+        />
+      )}
       <div className="w-full px-6 py-12 h-full  ">
         <div className="flex justify-center items-center flex-wrap h-full g-6 text-gray-100">
           <div className="bg-[#000] h-3/5 w-3/5 rounded-3xl flex">
@@ -117,6 +127,13 @@ function Login() {
                           className="text-indigo-600">
                           Sign Up
                         </a>
+                      </p>
+                    </div>
+                    <div className=" mb-4 flex items-center justify-center">
+                      <p
+                        className="text-cyan-800 text-xs text-right font-normal"
+                        onClick={() => setOtpModal(true)}>
+                        Change username/email
                       </p>
                     </div>
                   </form>

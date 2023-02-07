@@ -9,6 +9,7 @@ import {
 } from "../features/auth/authSlice";
 import { FaTimes } from "react-icons/fa";
 import axios from "axios";
+import OtpModal from "./OtpModal";
 
 const customStyles = {
   content: {
@@ -25,6 +26,7 @@ const customStyles = {
 // Modal.setAppElement("#yourAppElement");
 
 function ProfileModal({ modalState, close }) {
+  // const [otpModal, setOtpModal] = useState(false);
   const [desc, SetDesc] = useState({
     firstName: "",
     lastName: "",
@@ -49,6 +51,9 @@ function ProfileModal({ modalState, close }) {
     getData();
     console.log("hii");
   }, []);
+  // const closeOtpModal = () => {
+  //   setOtpModal(false);
+  // };
   const getData = async () => {
     console.log("token:", token);
     const result = await axios.get("http://localhost:4000/profile", {
@@ -125,6 +130,12 @@ function ProfileModal({ modalState, close }) {
   if (!modalState) return null;
   return (
     <div>
+      {/* {otpModal && (
+        <OtpModal
+          modalState={otpModal}
+          close={closeOtpModal}
+        />
+      )} */}
       {/* <button onClick={openModal}>Open Modal</button> */}
       <Modal
         isOpen={modalState}
@@ -248,13 +259,13 @@ function ProfileModal({ modalState, close }) {
                   />
                 </div>
               </div>
-              <div class="mb-6">
-                <label
-                  for="email"
-                  class="block text-sm font-medium text-gray-900">
-                  Your Email
-                </label>
-                <div class="relative mb-6">
+              <label
+                for="email"
+                class="block text-sm font-medium text-gray-900">
+                Your Email
+              </label>
+              <div class="w-full mb-6 flex justify-between">
+                <div class="relative mb-6 w-full">
                   <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                     <svg
                       aria-hidden="true"
@@ -270,12 +281,18 @@ function ProfileModal({ modalState, close }) {
                     type="text"
                     id="email"
                     name="email"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-[100%] pl-10 p-2  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     placeholder="name@gmail.com"
                     value={userData.email}
-                    onChange={valueSet}
+                    disabled
                   />
                 </div>
+                {/* <button
+                  type="button"
+                  class="text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-2 py-2 h-10 text-center mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                  onClick={() => setOtpModal(true)}>
+                  Edit
+                </button> */}
               </div>
               <div class="mb-2">
                 <div class="flex items-center justify-center w-full ">

@@ -5,7 +5,7 @@ const { hashOtp, compareOtp } = require("./helper");
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
-  port: 587,
+  port: 465,
 
   auth: {
     user: process.env.MAIL_EMAIL,
@@ -15,6 +15,12 @@ const transporter = nodemailer.createTransport({
 
 const sendOtpVerification = async ({ _id, email }, req, res) => {
   try {
+    console.log(
+      "email to",
+      email,
+      process.env.MAIL_EMAIL,
+      process.env.MAIL_PASSWORD
+    );
     const otp = `${Math.floor(100000 + Math.random() * 9000)}`;
     const mailOptions = {
       from: process.env.MAIL_EMAIL,
@@ -37,7 +43,9 @@ const sendOtpVerification = async ({ _id, email }, req, res) => {
     });
 
     await newOtpRecord.save();
+    console.log("saved otp");
     await transporter.sendMail(mailOptions);
+    console.log("saved");
     res.status(200).json({ newOtpRecord });
   } catch (err) {
     console.log(err);

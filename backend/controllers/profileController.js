@@ -3,12 +3,14 @@ const User = require("../models/user");
 const Otp = require("../models/otp");
 const jwt = require("jsonwebtoken");
 const cookies = require("cookie-parser");
+const { sendOtpVerification } = require("../utils/otpMailer");
+const { compareOtp } = require("../utils/helper");
 
 exports.getProfile = async (req, res) => {
-  // console.log("emaill", req.user.UserInfo.email);
+  console.log("emaill", req.user.UserInfo.email);
   const userEmail = req.user.UserInfo.email;
   const user = await User.findOne({ email: userEmail });
-  if (!user) return res.sendStatus(403).json({ msg: "notFound" });
+  if (!user) return res.status(403).json({ msg: "notFound" });
 
   res.json({ user: user });
 };
