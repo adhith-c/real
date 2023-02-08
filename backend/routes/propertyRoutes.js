@@ -7,6 +7,7 @@ const {
   getSingleProperty,
   MyProperties,
   getPropertyChart,
+  markSold,
 } = require("../controllers/propertyController");
 const { verifyToken } = require("../middleware/verifyToken");
 
@@ -15,5 +16,6 @@ router.get("/", verifyToken, getProperty);
 router.get("/myProperties", verifyToken, MyProperties);
 router.get("/singleProperty/:id", verifyToken, getSingleProperty);
 router.get("/propertyChart", getPropertyChart);
+router.post("/markSold/:id", verifyToken, markSold);
 
 module.exports = router;

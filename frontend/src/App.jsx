@@ -15,6 +15,9 @@ import SavedPage from "./pages/SavedPage/SavedPage";
 import Chat from "./pages/Chat/Chat";
 import AdminLogin from "./pages/AdminPages/Login";
 import AdminHomePage from "./pages/AdminPages/HomePage";
+import MyProperties from "./pages/MyProperties/MyProperties";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
@@ -50,22 +53,25 @@ function App() {
           path="/admin/dashboard"
           element={<AdminHomePage />}
         />
-
         <Route
-          path="profile"
-          element={<ProfilePage />}
-        />
-        <Route
-          path="propertyDetails/:id"
-          element={<PropertyPage />}
-        />
-        <Route
-          path="saved"
-          element={<SavedPage />}
+          path="/myProperties"
+          element={<MyProperties />}
         />
 
         {/* protected routes */}
         <Route element={<RequireAuth />}>
+          <Route
+            path="saved"
+            element={<SavedPage />}
+          />
+          <Route
+            path="profile"
+            element={<ProfilePage />}
+          />
+          <Route
+            path="propertyDetails/:id"
+            element={<PropertyPage />}
+          />
           <Route
             path="home"
             element={<HomePage />}
@@ -84,6 +90,7 @@ function App() {
           />
         </Route>
       </Routes>
+      <ToastContainer position="bottom-right" />
     </StrictMode>
 
     // <div>

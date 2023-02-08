@@ -90,14 +90,7 @@ function SellModal({ modalState, close, setToast }) {
     url = [];
     SetImage("");
   }, []);
-  //   const getData = async () => {
-  //     console.log("token:", token);
-  //     const result = await axios.get("http://localhost:4000/profile", {
-  //       headers: { Authorization: `Bearer ${token}` },
-  //     });
-  //     console.log("result ", result.data.user);
-  //     setUserData(result.data.user);
-  //   };
+
   const valueSet = (e) => {
     // console.log("e.target.name", e.target.name);
 
@@ -108,21 +101,6 @@ function SellModal({ modalState, close, setToast }) {
     }));
   };
 
-  // let subtitle;
-  // const [modalIsOpen, setIsOpen] = React.useState(false);
-
-  // function openModal() {
-  //   setIsOpen(true);
-  // }
-
-  // function afterOpenModal() {
-  //   // references are now sync'd and can be accessed.
-  //   subtitle.style.color = "#f00";
-  // }
-
-  // function closeModal() {
-  //   setIsOpen(false);
-  // }
   const imageHalndler = (e) => {
     e.preventDefault();
     // console.log("hii imagehandler", files);

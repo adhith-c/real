@@ -147,7 +147,6 @@ function SignUp() {
       validation.password.status == true &&
       validation.confirmPassword.status == true
     ) {
-      console.log("form submit ayee");
       try {
         console.log("userdata", userData);
         const response = await axios.post("/register", userData);

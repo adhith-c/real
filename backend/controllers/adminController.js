@@ -6,6 +6,7 @@ const Banner = require("../models/banner");
 const Chat = require("../models/chat");
 const jwt = require("jsonwebtoken");
 const { hashPassword, comparePassword } = require("../utils/helper");
+const { validateAdmin } = require("../utils/validator");
 
 exports.getAdminLogin = async (req, res) => {
   try {
@@ -28,38 +29,16 @@ exports.getAdminLogin = async (req, res) => {
 };
 
 exports.postAdminLogin = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const admin = await Admin.findOne({ email });
-    console.log("admin", admin);
-    if (admin) {
-      const isValid = comparePassword(password, admin.password);
-      console.log("valid", isValid);
-      if (isValid) {
-        const token = jwt.sign(
-          {
-            id: admin._id,
-            name: admin.name,
-            type: "admin",
-          },
-          process.env.JWT_ADMIN_SECRET_KEY
-        );
-        res.status(200).json({ accessToken: token, id: admin._id });
-      } else {
-        res.send("incorrect password");
-      }
-    } else {
-      // res.send("invalid email");
-      const hashedpassword = hashPassword(process.env.PASSWORD);
-      const newAdmin = new Admin({
-        name: process.env.NAME,
-        email: process.env.EMAIL,
-        password: hashedpassword,
-      });
-      await newAdmin.save();
-      if (email === newAdmin.email) {
-        const isValidPass = comparePassword(password, newAdmin.password);
-        if (isValidPass) {
+  const { error, value } = validateAdmin(req.body);
+  if (!error) {
+    try {
+      const { email, password } = req.body;
+      const admin = await Admin.findOne({ email });
+      console.log("admin", admin);
+      if (admin) {
+        const isValid = comparePassword(password, admin.password);
+        console.log("valid", isValid);
+        if (isValid) {
           const token = jwt.sign(
             {
               id: admin._id,
@@ -68,15 +47,43 @@ exports.postAdminLogin = async (req, res) => {
             },
             process.env.JWT_ADMIN_SECRET_KEY
           );
-          res.status(200).json({ id: admin._id, accessToken: token });
+          res.status(200).json({ accessToken: token, id: admin._id });
         } else {
           res.send("incorrect password");
         }
+      } else {
+        // res.send("invalid email");
+        const hashedpassword = hashPassword(process.env.PASSWORD);
+        const newAdmin = new Admin({
+          name: process.env.NAME,
+          email: process.env.EMAIL,
+          password: hashedpassword,
+        });
+        await newAdmin.save();
+        if (email === newAdmin.email) {
+          const isValidPass = comparePassword(password, newAdmin.password);
+          if (isValidPass) {
+            const token = jwt.sign(
+              {
+                id: admin._id,
+                name: admin.name,
+                type: "admin",
+              },
+              process.env.JWT_ADMIN_SECRET_KEY
+            );
+            res.status(200).json({ id: admin._id, accessToken: token });
+          } else {
+            res.send("incorrect password");
+          }
+        }
       }
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ error: err });
     }
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: err });
+  } else {
+    console.log(error);
+    res.json({ error });
   }
 };
 

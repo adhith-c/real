@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import "./Otp.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "../../config/axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { responsiveProperty } from "@mui/material/styles/cssUtils";
 
 function Otp() {
@@ -58,14 +60,16 @@ function Otp() {
         otp,
         email: location.state.email,
       });
-      console.log(response.data);
+      console.log("data of resp", response.data);
       if (response.data) {
+        toast.success("Registered successfully.Please Login");
         navigate("/login");
       } else {
         setValidate((prevState) => ({
           status: false,
           message: "Incorrect Otp",
         }));
+        toast.success("Incorrect Otp");
       }
     }
     // else {
@@ -75,6 +79,7 @@ function Otp() {
   return (
     // <div className="h-screen bg-[url('../public/buildings.jpg')]  bg-opacity-25 bg-cover">
     <div className="h-screen bg-cover otpBg">
+      <ToastContainer position="bottom-right" />
       <div className="w-full px-6 py-12 h-full  ">
         <div className="flex justify-center items-center flex-wrap h-full g-6 text-gray-100">
           <div className=" md: w-2/5 rounded-r-3xl rounded-l-3xl ">

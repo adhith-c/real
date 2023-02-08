@@ -13,6 +13,13 @@ const {
 
 const { sendOtpVerification } = require("../utils/otpMailer");
 const { default: mongoose } = require("mongoose");
+const {
+  validateSignup,
+  validateOtp,
+  validateLogin,
+  validateChangeEmail,
+  validateEmailOtp,
+} = require("../utils/validator");
 
 exports.homePage = async (req, res) => {
   try {
@@ -32,37 +39,45 @@ exports.homePage = async (req, res) => {
 // };
 
 exports.register = async (req, res) => {
-  try {
-    console.log(req.body);
-    const { firstName, lastName, email, password } = req.body;
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      if (existingUser.isVerified == false) {
-        await User.findOneAndDelete({ email });
+  const { error, value } = validateSignup(req.body);
+  if (error) {
+    console.log("error", error);
+    res.json({ error });
+  } else {
+    try {
+      console.log(req.body);
+      const { firstName, lastName, email, password } = req.body;
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        if (existingUser.isVerified == false) {
+          await User.findOneAndDelete({ email });
+        }
       }
+      const userName = await User.findOne({ email });
+      if (!userName) {
+        const hashedpassword = hashPassword(password);
+        const user = await User.create({
+          firstName,
+          lastName,
+          email,
+          password: hashedpassword,
+        });
+        user.save().then(async (data) => {
+          await Otp.findOneAndDelete({ userEmail: email });
+          sendOtpVerification(data, req, res);
+        });
+      } else {
+        res.send("");
+      }
+    } catch (err) {
+      console.log(err);
+      res.json({ err });
     }
-    const userName = await User.findOne({ email });
-    if (!userName) {
-      const hashedpassword = hashPassword(password);
-      const user = await User.create({
-        firstName,
-        lastName,
-        email,
-        password: hashedpassword,
-      });
-      user.save().then(async (data) => {
-        await Otp.findOneAndDelete({ userEmail: email });
-        sendOtpVerification(data, req, res);
-      });
-    } else {
-      res.send("");
-    }
-  } catch (err) {
-    console.log(err);
   }
 };
 
 exports.otpVerify = async (req, res) => {
+  const { error, value } = validateOtp(req.body);
   try {
     const { otp, email } = req.body;
     const userOtp = await Otp.findOne({ userEmail: email });
@@ -72,14 +87,14 @@ exports.otpVerify = async (req, res) => {
         await User.findOneAndUpdate({ email }, { isVerified: true });
         await Otp.findOneAndDelete({ userEmail: email });
         const userEmail = await User.findOne({ email });
-        const token = jwt.sign(
-          {
-            id: userEmail._id,
-            name: userEmail.firstName + userEmail.lastName,
-            type: "user",
-          },
-          process.env.JWT_SECRET_KEY
-        );
+        // const token = jwt.sign(
+        //   {
+        //     id: userEmail._id,
+        //     name: userEmail.firstName + userEmail.lastName,
+        //     type: "user",
+        //   },
+        //   process.env.JWT_ACCESS_TOKEN
+        // );
         res.send(true);
       } else {
         res.send(false);
@@ -108,63 +123,69 @@ exports.resendOtp = async (req, res) => {
 };
 
 exports.userLogin = async (req, res) => {
-  try {
-    const { user, pwd } = req.body;
-    const userEmail = await User.findOne({ email: user });
-    // let user;
-    if (!userEmail) return res.sendStatus(401);
-    const isValidPass = comparePassword(pwd, userEmail.password);
-    if (isValidPass) {
-      const accessToken = jwt.sign(
-        {
-          UserInfo: {
-            email: userEmail.email,
-            type: "user",
+  const { error, value } = validateLogin(req.body);
+  if (!error) {
+    try {
+      const { user, pwd } = req.body;
+      const userEmail = await User.findOne({ email: user });
+      // let user;
+      if (!userEmail) return res.sendStatus(401);
+      const isValidPass = comparePassword(pwd, userEmail.password);
+      if (isValidPass) {
+        const accessToken = jwt.sign(
+          {
+            UserInfo: {
+              email: userEmail.email,
+              type: "user",
+            },
           },
-        },
-        "75d4ac5a25940d574bfabe0556e7dfd74e1c989091df1008ff5b50a77dd14d3f2dce4597802d6ab5fa158ff068f08c90dbf311a57512e030a932d8a8b608d91c",
-        // process.env.JWY_ACCESS_TOKEN,
-        { expiresIn: "1d" }
-      );
-      const newRefreshToken = jwt.sign(
-        {
-          email: userEmail.email,
-        },
-        process.env.JWT_REFRESH_TOKEN,
-        { expiresIn: "5d" }
-      );
+          "75d4ac5a25940d574bfabe0556e7dfd74e1c989091df1008ff5b50a77dd14d3f2dce4597802d6ab5fa158ff068f08c90dbf311a57512e030a932d8a8b608d91c",
+          // process.env.JWY_ACCESS_TOKEN,
+          { expiresIn: "1d" }
+        );
+        const newRefreshToken = jwt.sign(
+          {
+            email: userEmail.email,
+          },
+          process.env.JWT_REFRESH_TOKEN,
+          { expiresIn: "5d" }
+        );
 
-      let newRefreshTokenArray = !cookies?.jwt
-        ? userEmail.refreshToken
-        : userEmail.refreshToken.filter((rt) => rt !== cookies.jwt);
-      if (cookies?.jwt) {
-        const refreshToken = cookies.jwt;
-        const foundToken = await User.find({ refreshToken }).exec();
+        let newRefreshTokenArray = !cookies?.jwt
+          ? userEmail.refreshToken
+          : userEmail.refreshToken.filter((rt) => rt !== cookies.jwt);
+        if (cookies?.jwt) {
+          const refreshToken = cookies.jwt;
+          const foundToken = await User.find({ refreshToken }).exec();
 
-        if (!foundToken) {
-          newRefreshTokenArray = [];
+          if (!foundToken) {
+            newRefreshTokenArray = [];
+          }
+          res.clearCookie("jwt", {
+            httpOnly: true,
+            sameSite: "None",
+            secure: true,
+          });
         }
-        res.clearCookie("jwt", {
+        userEmail.refreshToken = [...newRefreshTokenArray, newRefreshToken];
+        const result = await userEmail.save();
+        res.cookie("jwt", newRefreshToken, {
           httpOnly: true,
           sameSite: "None",
           secure: true,
+          maxAge: 24 * 60 * 60 * 1000,
         });
+        const id = userEmail._id;
+        res.json({ accessToken, id });
+      } else {
+        res.sendStatus(401);
       }
-      userEmail.refreshToken = [...newRefreshTokenArray, newRefreshToken];
-      const result = await userEmail.save();
-      res.cookie("jwt", newRefreshToken, {
-        httpOnly: true,
-        sameSite: "None",
-        secure: true,
-        maxAge: 24 * 60 * 60 * 1000,
-      });
-      const id = userEmail._id;
-      res.json({ accessToken, id });
-    } else {
-      res.sendStatus(401);
+    } catch (err) {
+      console.log(err);
     }
-  } catch (err) {
-    console.log(err);
+  } else {
+    console.log(error);
+    res.status(401).json({ error });
   }
 };
 
@@ -292,54 +313,65 @@ exports.getEmailUser = async (req, res) => {
 };
 
 exports.changeEmail = async (req, res) => {
-  try {
-    console.log("req,", req.body);
-    const userMail = req.body.oldEmail;
-    const user = await User.findOne({ email: userMail });
-    // await Otp.findOneAndDelete({ userEmail: userMail });
-    await Otp.deleteMany({ userEmail: userMail });
-    await Otp.deleteMany({ userEmail: req.body.email });
+  const { error, value } = validateChangeEmail(req.body);
+  if (!error) {
+    try {
+      console.log("req,", req.body);
+      const userMail = req.body.oldEmail;
+      const user = await User.findOne({ email: userMail });
+      // await Otp.findOneAndDelete({ userEmail: userMail });
+      await Otp.deleteMany({ userEmail: userMail });
+      await Otp.deleteMany({ userEmail: req.body.email });
 
-    sendOtpVerification({ _id: user._id, email: req.body.email }, req, res);
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ err });
+      sendOtpVerification({ _id: user._id, email: req.body.email }, req, res);
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ err });
+    }
+  } else {
+    console.log(error);
   }
 };
 exports.verifyOtp = async (req, res) => {
-  try {
-    const otp = req.body.otp;
-    const newEmail = req.body.email;
-    console.log("req,", req.body);
-    const userMail = req.body.oldEmail;
-    // const user = await User.findOne({ email: userMail });
-    const userOtp = await Otp.findOne({ userEmail: newEmail });
-    let message = "";
-    if (Date.now() < userOtp.expiresAt) {
-      const isValidOtp = compareOtp(otp, userOtp.otp);
-      if (isValidOtp) {
-        console.log("valid otp");
-        await User.findOneAndUpdate(
-          { email: userMail },
-          { email: newEmail, isVerified: true }
-        );
-        await Otp.findOneAndDelete({ userEmail: newEmail });
-        message = "verified";
+  const { error, value } = validateEmailOtp(req.body);
+  if (!error) {
+    try {
+      const otp = req.body.otp;
+      const newEmail = req.body.email;
+      console.log("req,", req.body);
+      const userMail = req.body.oldEmail;
+      // const user = await User.findOne({ email: userMail });
+      const userOtp = await Otp.findOne({ userEmail: newEmail });
+      let message = "";
+      if (Date.now() < userOtp.expiresAt) {
+        const isValidOtp = compareOtp(otp, userOtp.otp);
+        if (isValidOtp) {
+          console.log("valid otp");
+          await User.findOneAndUpdate(
+            { email: userMail },
+            { email: newEmail, isVerified: true }
+          );
+          await Otp.findOneAndDelete({ userEmail: newEmail });
+          message = "verified";
+        } else {
+          console.log("invalid otp");
+          message = "invalid-otp";
+          // res.status(401);
+        }
       } else {
-        console.log("invalid otp");
-        message = "invalid-otp";
-        // res.status(401);
+        console.log("otp expired");
+        await Otp.findOneAndDelete({ userEmail: userMail });
+        message = "otp-expired";
+        //await User.findOneAndDelete({ email: email });
+        // res.status(403);
       }
-    } else {
-      console.log("otp expired");
-      await Otp.findOneAndDelete({ userEmail: userMail });
-      message = "otp-expired";
-      //await User.findOneAndDelete({ email: email });
-      // res.status(403);
+      res.status(200).json({ message });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ err });
     }
-    res.status(200).json({ message });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ err });
+  } else {
+    console.log(error);
+    res.status(401).json({ error });
   }
 };

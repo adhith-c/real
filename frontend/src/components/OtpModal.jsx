@@ -111,7 +111,7 @@ function OtpModal({ modalState, close }) {
   if (!modalState) return null;
   return (
     <div className="w-[50rem]">
-      <ToastContainer position="bottom-right" />
+      {/* <ToastContainer position="bottom-right" /> */}
       <Modal
         isOpen={modalState}
         onRequestClose={close}

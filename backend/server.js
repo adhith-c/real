@@ -2,7 +2,7 @@ require("dotenv").config();
 
 const express = require("express");
 const logger = require("morgan");
-const ejsMate = require("ejs-mate");
+// const ejsMate = require("ejs-mate");
 const cors = require("cors");
 const app = express();
 

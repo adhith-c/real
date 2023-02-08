@@ -96,6 +96,9 @@ function NavBar() {
   function handleChats() {
     navigate("/chat");
   }
+  function NavigateMyProperties() {
+    navigate("/myProperties");
+  }
   return (
     <div className="flex justify-between item-center h-16 max-w-[1240px] mx-auto px-4 font-Jost">
       <SellModal
@@ -111,7 +114,11 @@ function NavBar() {
           onClick={NavigateBackHome}>
           Home
         </li>
-        <li className="p-4">Property Type</li>
+        <li
+          className="p-4"
+          onClick={NavigateMyProperties}>
+          My Properties
+        </li>
         {/* <li className="p-4">Notifications</li> */}
         {/* {notifications &&
           notifications.map((notification) => {

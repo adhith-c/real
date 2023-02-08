@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../../features/auth/authSlice";
 import { useLoginMutation } from "../../features/authApiSlice";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import "./Login.css";
 import Loading from "../../components/Loading";
@@ -14,9 +16,11 @@ function Login() {
   const [user, setUser] = useState("");
   const [pwd, setPwd] = useState("");
   const [errMsg, setErrMsg] = useState("");
+
   const navigate = useNavigate();
   const [login, { isLoading }] = useLoginMutation();
   const dispatch = useDispatch();
+
   useEffect(() => {
     userRef.current.focus();
   }, []);
@@ -28,6 +32,7 @@ function Login() {
     e.preventDefault();
     try {
       const userData = await login({ user, pwd }).unwrap();
+      console.log("usereData", userData);
       dispatch(setCredentials({ ...userData, user }));
       setUser("");
       setPwd("");

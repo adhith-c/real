@@ -9,7 +9,7 @@ import {
 } from "../features/auth/authSlice";
 import { FaTimes } from "react-icons/fa";
 import axios from "axios";
-import OtpModal from "./OtpModal";
+import { toast } from "react-toastify";
 
 const customStyles = {
   content: {
@@ -120,9 +120,20 @@ function ProfileModal({ modalState, close }) {
             close();
             resetShare();
             setUserData("");
+            console.log("hijio", data);
+            if (data.user) {
+              toast.success("Profile updated successfully");
+            } else if (data.error) {
+              toast.error(data.error.message);
+            } else {
+              toast.warning("Somenthing Went Wrong.Try Again after some time");
+            }
           });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        toast.warning("Somethig went Wrong...");
+        console.log(err);
+      });
   };
   const resetShare = () => {
     SetImage(null);

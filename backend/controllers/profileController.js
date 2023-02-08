@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const cookies = require("cookie-parser");
 const { sendOtpVerification } = require("../utils/otpMailer");
 const { compareOtp } = require("../utils/helper");
+const { validateProfile } = require("../utils/validator");
 
 exports.getProfile = async (req, res) => {
   console.log("emaill", req.user.UserInfo.email);
@@ -20,18 +21,25 @@ exports.postProfile = async (req, res) => {
 };
 
 exports.editProfile = async (req, res) => {
-  try {
-    console.log("req body", req.body);
-    console.log("req params", req.params);
-    const user = await User.findByIdAndUpdate(req.body.userData._id, {
-      ...req.body.userData,
-      url: req.body.url,
-      // firstName: req.body.userData.firstName,
-      // lastName: req.body.userData.lastName,
-      // email: req.body.userData.email,
-    });
-    res.send(user);
-  } catch (err) {
-    console.log(err);
+  const { error, value } = validateProfile(req.body);
+  if (!error) {
+    try {
+      // console.log("req body", req.body);
+      // console.log("req params", req.params);
+      const user = await User.findByIdAndUpdate(req.body.userData._id, {
+        ...req.body.userData,
+        url: req.body.url,
+        // firstName: req.body.userData.firstName,
+        // lastName: req.body.userData.lastName,
+        // email: req.body.userData.email,
+      });
+      res.json({ user });
+    } catch (err) {
+      console.log(err);
+      res.json({ error: err });
+    }
+  } else {
+    console.log(error);
+    res.json({ error });
   }
 };
